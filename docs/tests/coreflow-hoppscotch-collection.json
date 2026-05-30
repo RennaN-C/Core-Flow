@@ -1,0 +1,220 @@
+{
+  "v": 12,
+  "name": "CoreFlow - Testes de API",
+  "folders": [],
+  "requests": [
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/register",
+      "name": "01 - Cadastro com sucesso",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "const suffix = Date.now();\npw.env.set(\"testEmail\", `qa.coreflow.${suffix}@example.com`);\npw.env.set(\"testDocument\", `${suffix}`);",
+      "testScript": "pw.test(\"Cadastro criado\", () => {\n  pw.expect(pw.response.status).toBe(201);\n  pw.expect(pw.response.body.licenseKey).toBeType(\"string\");\n  pw.expect(pw.response.body.user.email).toBe(pw.env.get(\"testEmail\"));\n});\n\npw.env.set(\"licenseKey\", pw.response.body.licenseKey);",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"name\": \"QA CoreFlow\",\n  \"email\": \"<<testEmail>>\",\n  \"password\": \"SenhaQA123!\",\n  \"companyName\": \"Empresa QA CoreFlow\",\n  \"companyDocument\": \"<<testDocument>>\",\n  \"companyPhone\": \"11999999999\",\n  \"business_type\": \"varejo\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Cria tenant e usuario administrador. Salva licenseKey e testEmail para as proximas requisicoes."
+    },
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/login",
+      "name": "02 - Login com sucesso",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "",
+      "testScript": "pw.test(\"Login autenticado\", () => {\n  pw.expect(pw.response.status).toBe(200);\n  pw.expect(pw.response.body.token).toBeType(\"string\");\n  pw.expect(pw.response.body.user.email).toBe(pw.env.get(\"testEmail\"));\n});\n\npw.env.set(\"token\", pw.response.body.token);",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"email\": \"<<testEmail>>\",\n  \"password\": \"SenhaQA123!\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Autentica o usuario criado e salva o JWT para os testes protegidos."
+    },
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/activate",
+      "name": "03 - Ativacao sem token",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "",
+      "testScript": "pw.test(\"Ativacao exige autenticacao\", () => {\n  pw.expect(pw.response.status).toBe(401);\n  pw.expect(pw.response.body.error).toBeType(\"string\");\n});",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"licenseKey\": \"<<licenseKey>>\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Valida que a rota protegida rejeita requisicoes sem Bearer token."
+    },
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/activate",
+      "name": "04 - Ativacao com chave invalida",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer <<token>>",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "",
+      "testScript": "pw.test(\"Chave invalida rejeitada\", () => {\n  pw.expect(pw.response.status).toBe(400);\n  pw.expect(pw.response.body.error).toBeType(\"string\");\n});",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"licenseKey\": \"INVALIDA-0000-0000-0000\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Valida que uma chave inexistente nao ativa o tenant autenticado."
+    },
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/activate",
+      "name": "05 - Ativacao com sucesso",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        },
+        {
+          "key": "Authorization",
+          "value": "Bearer <<token>>",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "",
+      "testScript": "pw.test(\"Tenant ativado\", () => {\n  pw.expect(pw.response.status).toBe(200);\n  pw.expect(pw.response.body.active).toBe(true);\n});",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"licenseKey\": \"<<licenseKey>>\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Ativa somente o tenant do usuario autenticado usando a chave gerada no cadastro."
+    },
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/register",
+      "name": "06 - Cadastro com email duplicado",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "",
+      "testScript": "pw.test(\"Email duplicado rejeitado\", () => {\n  pw.expect(pw.response.status).toBe(400);\n  pw.expect(pw.response.body.error).toBeType(\"string\");\n});",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"name\": \"QA CoreFlow Duplicado\",\n  \"email\": \"<<testEmail>>\",\n  \"password\": \"SenhaQA123!\",\n  \"companyName\": \"Empresa QA Duplicada\",\n  \"companyDocument\": \"\",\n  \"business_type\": \"varejo\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Valida a regra de unicidade do e-mail."
+    },
+    {
+      "v": "17",
+      "endpoint": "<<baseURL>>/auth/login",
+      "name": "07 - Login com senha invalida",
+      "params": [],
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "active": true
+        }
+      ],
+      "method": "POST",
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "preRequestScript": "",
+      "testScript": "pw.test(\"Senha invalida rejeitada\", () => {\n  pw.expect(pw.response.status).toBe(401);\n  pw.expect(pw.response.body.error).toBeType(\"string\");\n});",
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n  \"email\": \"<<testEmail>>\",\n  \"password\": \"senha-incorreta\"\n}"
+      },
+      "requestVariables": [],
+      "responses": {},
+      "description": "Valida que uma senha incorreta nao gera JWT."
+    }
+  ],
+  "headers": [],
+  "auth": {
+    "authType": "none",
+    "authActive": true
+  },
+  "variables": [
+    {
+      "key": "baseURL",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "description": "Colecao Hoppscotch para testes da API CoreFlow. Execute kubectl port-forward service/coreflow-api-service 8080:3001 antes de rodar a colecao.",
+  "preRequestScript": "",
+  "testScript": ""
+}
