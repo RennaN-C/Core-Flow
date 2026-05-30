@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coreflow-front-deployment
+  labels:
+    app: coreflow-front
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: coreflow-front
+  template:
+    metadata:
+      labels:
+        app: coreflow-front
+    spec:
+      containers:
+        - name: coreflow-front
+          image: rennanmk9/coreflow-front:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 5173
+          env:
+            - name: VITE_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: API_URL

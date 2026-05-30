@@ -1,0 +1,14 @@
+node_modules/
+**/node_modules/
+**/dist/
+**/build/
+.env
+.env.*
+.env.local
+pgdata/
+.docker/
+*.log
+.vscode/
+.DS_Store
+Thumbs.db
+secret.yaml

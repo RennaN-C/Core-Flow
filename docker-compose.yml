@@ -1,0 +1,47 @@
+services:
+  postgres_local: 
+    image: postgres:15-alpine
+    container_name: coreflow_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - coreflow_net
+
+  api:
+    build: ./backend        #
+    image: rennanmk9/coreflow-api:1.0.0
+    container_name: coreflow_api
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env
+    depends_on:
+      postgres_local:
+        condition: service_healthy
+    networks:
+      - coreflow_net
+    command: npm run dev
+
+  frontend:
+    build: ./frontend      
+    image: rennanmk9/coreflow-front:1.0.0
+    container_name: coreflow_frontend
+    ports:
+      - "8080:5173"
+    networks:
+      - coreflow_net
+    depends_on:
+      - api
+
+networks:
+  coreflow_net:
+    driver: bridge
