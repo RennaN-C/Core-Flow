@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Tenant } = require('../models');
+const { User, Tenant, sequelize } = require('../models');
 
 const generateLicenseKey = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -28,23 +28,27 @@ class AuthController {
       
       const documentToSave = companyDocument && companyDocument.trim() !== "" ? companyDocument : null;
 
-      const tenant = await Tenant.create({
-        name: companyName,
-        business_type: business_type, 
-        document: documentToSave, 
-        licenseKey: licenseKey, 
-        active: false
-      });
+      const { tenant, user } = await sequelize.transaction(async (transaction) => {
+        const tenant = await Tenant.create({
+          name: companyName,
+          business_type: business_type,
+          document: documentToSave,
+          licenseKey: licenseKey,
+          active: false
+        }, { transaction });
 
-      const salt = await bcrypt.genSalt(10);
-      const password_hash = await bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(password, salt);
 
-      const user = await User.create({
-        tenant_id: tenant.id,
-        name: name, 
-        email,
-        password_hash,
-        role: 'admin' 
+        const user = await User.create({
+          tenant_id: tenant.id,
+          name: name,
+          email,
+          password_hash,
+          role: 'admin'
+        }, { transaction });
+
+        return { tenant, user };
       });
 
       return res.status(201).json({
@@ -85,7 +89,7 @@ class AuthController {
           tenant_id: user.tenant_id,
           role: user.role
         }, 
-        process.env.JWT_SECRET || 'sua_senha_secreta_super_segura', 
+        process.env.JWT_SECRET,
         { expiresIn: '1d' } 
       );
 
@@ -114,7 +118,12 @@ class AuthController {
       }
 
       
-      const tenant = await Tenant.findOne({ where: { licenseKey: licenseKey.trim() } });
+      const tenant = await Tenant.findOne({
+        where: {
+          id: req.user.tenant_id,
+          licenseKey: licenseKey.trim()
+        }
+      });
 
       if (!tenant) {
         console.log("ERRO: Chave não encontrada no banco");

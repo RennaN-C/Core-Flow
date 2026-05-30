@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -17,7 +17,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await api.post("/auth/login", { email, password });
+      const response = await api.post("/login", { email, password });
       
       
       localStorage.setItem("@CoreFlow:token", response.data.token);

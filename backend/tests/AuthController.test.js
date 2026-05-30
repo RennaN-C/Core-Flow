@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 // MOCK (Falsificação) das Dependências
 jest.mock('../models', () => ({
   User: { findOne: jest.fn(), create: jest.fn() },
-  Tenant: { create: jest.fn(), findByPk: jest.fn() }
+  Tenant: { create: jest.fn(), findByPk: jest.fn() },
+  sequelize: { transaction: jest.fn((callback) => callback('transaction')) }
 }));
 
 jest.mock('bcryptjs', () => ({

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../services/api";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Lock, Mail, User, Briefcase, FileText, Phone, Loader2, Key, Copy, CheckCircle, Store } from "lucide-react";
 
 const Register = () => {
@@ -19,7 +19,7 @@ const Register = () => {
     e.preventDefault();
     setError(""); setLoading(true);
     try {
-      const response = await api.post("/auth/register", formData);
+      const response = await api.post("/register", formData);
       setGeneratedLicense(response.data.licenseKey); 
     } catch (err) {
       setError(err.response?.data?.error || "Erro ao realizar o cadastro. Verifique os dados.");

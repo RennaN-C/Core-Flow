@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../../services/api";
 import { Key, Loader2, AlertTriangle, LogOut } from "lucide-react";
 
@@ -14,7 +14,7 @@ const ActivateLicense = () => {
 
     try {
      
-      await api.post("/auth/activate", { licenseKey });
+      await api.post("/activate", { licenseKey });
       
      
       const userStr = localStorage.getItem("@CoreFlow:user");

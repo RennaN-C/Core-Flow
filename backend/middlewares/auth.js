@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
 
   try {
  
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'sua_senha_secreta_super_segura');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
   
     req.user = {
