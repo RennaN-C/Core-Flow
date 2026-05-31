@@ -1,7 +1,7 @@
 <div align="center">
   <img src="frontend/public/images/coreflow-wordmark.png" alt="CoreFlow Business OS" width="360" />
 
-  <h3>Business OS multi-tenant para operações, clientes e cobranças</h3>
+  <h3>⚡ Business OS multi-tenant para operações, clientes e cobranças</h3>
 
   <p>
     Uma plataforma SaaS responsiva que adapta a experiência do sistema ao nicho de cada empresa,
@@ -9,14 +9,30 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/status-em%20desenvolvimento-7c3aed" alt="Status" />
-    <img src="https://img.shields.io/badge/API-1.0.10-111827" alt="API version" />
-    <img src="https://img.shields.io/badge/frontend-1.0.17-111827" alt="Frontend version" />
+    <img src="https://img.shields.io/badge/status-em%20desenvolvimento-7c3aed?style=for-the-badge" alt="Status" />
+    <img src="https://img.shields.io/badge/API-1.0.10-111827?style=for-the-badge" alt="API version" />
+    <img src="https://img.shields.io/badge/frontend-1.0.17-111827?style=for-the-badge" alt="Frontend version" />
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/SaaS-multi--tenant-8b5cf6?style=flat-square" alt="SaaS multi-tenant" />
+    <img src="https://img.shields.io/badge/licen%C3%A7a-por%20tenant-c026d3?style=flat-square" alt="Licença por tenant" />
+    <img src="https://img.shields.io/badge/RBAC-3%20cargos-0f766e?style=flat-square" alt="RBAC" />
+    <img src="https://img.shields.io/badge/nichos-10-f59e0b?style=flat-square" alt="10 nichos" />
+    <img src="https://img.shields.io/badge/layout-responsivo-2563eb?style=flat-square" alt="Layout responsivo" />
+    <img src="https://img.shields.io/badge/tema-dark%20%7C%20light-334155?style=flat-square" alt="Tema dark e light" />
+  </p>
+
+  <p>
     <img src="https://img.shields.io/badge/Node.js-20-43853D?logo=node.js&logoColor=white" alt="Node.js" />
     <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React" />
+    <img src="https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/Sequelize-6-52B0E7?logo=sequelize&logoColor=white" alt="Sequelize" />
     <img src="https://img.shields.io/badge/PostgreSQL-16-316192?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Docker-containers-2496ED?logo=docker&logoColor=white" alt="Docker" />
     <img src="https://img.shields.io/badge/Kubernetes-Minikube-326CE5?logo=kubernetes&logoColor=white" alt="Kubernetes" />
-    <img src="https://img.shields.io/badge/testes-Jest-C21325?logo=jest&logoColor=white" alt="Jest" />
+    <img src="https://img.shields.io/badge/Nginx-SPA%20proxy-009639?logo=nginx&logoColor=white" alt="Nginx" />
+    <img src="https://img.shields.io/badge/Jest-12%20testes-C21325?logo=jest&logoColor=white" alt="Jest" />
   </p>
 </div>
 
@@ -24,7 +40,8 @@
 
 ![CoreFlow](frontend/public/images/coreflow-hero.png)
 
-## Sobre o projeto
+<a id="sobre"></a>
+## 📌 Sobre o projeto
 
 O **CoreFlow** é um sistema SaaS de gestão empresarial desenvolvido para atender diferentes tipos de negócio sem perder uma experiência simples e consistente.
 
@@ -45,9 +62,34 @@ O sistema já possui uma base full-stack funcional em Kubernetes com:
 - tema claro e escuro;
 - layout responsivo para desktop e mobile.
 
-## Funcionalidades disponíveis
+## 🧭 Navegação rápida
 
-### Autenticação, segurança e licenciamento
+| Seção | Conteúdo |
+| --- | --- |
+| [✨ Funcionalidades](#funcionalidades) | Recursos concluídos no sistema |
+| [🏗️ Arquitetura](#arquitetura) | Componentes e estrutura do projeto |
+| [🧰 Stack](#stack) | Tecnologias utilizadas |
+| [🚀 Execução](#execucao) | Deploy local validado com Minikube |
+| [🧪 Testes](#testes) | Jest, lint, build e Hoppscotch |
+| [🗺️ Roadmap](#roadmap) | Próximas evoluções planejadas |
+
+## 🌟 Destaques
+
+| | Recurso | Resultado |
+| --- | --- | --- |
+| 🏢 | **Multi-tenancy** | Dados isolados por empresa usando `tenant_id` |
+| 🔑 | **Licença inteligente** | Nicho e módulos vinculados no momento do cadastro |
+| 🧩 | **10 nichos** | Recursos e campos personalizados para cada operação |
+| 💳 | **Financeiro** | PIX demo, recorrências, cancelamentos e webhooks |
+| 🛡️ | **RBAC** | Permissões separadas para administrador, gerente e funcionário |
+| 📊 | **Insights** | Métricas reais e resumo opcional enriquecido com IA |
+| 🧾 | **Auditoria** | Histórico de ações administrativas importantes |
+| 📱 | **Responsividade** | Navegação preparada para desktop e mobile |
+
+<a id="funcionalidades"></a>
+## ✨ Funcionalidades disponíveis
+
+### 🔐 Autenticação, segurança e licenciamento
 
 - Cadastro transacional de tenant e administrador com Sequelize.
 - Login protegido por JWT.
@@ -60,14 +102,14 @@ O sistema já possui uma base full-stack funcional em Kubernetes com:
 - Compatibilidade transparente com tenants criados antes do novo modelo de licença.
 - Middleware que bloqueia módulos internos enquanto a licença não estiver ativa.
 
-### SaaS multi-tenant
+### 🏢 SaaS multi-tenant
 
 - Todos os dados operacionais são vinculados ao `tenant_id`.
 - Consultas e alterações validam o tenant autenticado.
 - Clientes, cobranças, usuários, auditoria e insights são separados por empresa.
 - Um tenant não pode ativar, visualizar ou modificar recursos pertencentes a outro tenant.
 
-### Perfis por nicho
+### 🧩 Perfis por nicho
 
 O CoreFlow adapta nomes, campos adicionais, sugestões de cobrança, módulos e prioridades operacionais conforme o segmento escolhido no cadastro.
 
@@ -86,7 +128,7 @@ O CoreFlow adapta nomes, campos adicionais, sugestões de cobrança, módulos e 
 
 Cada módulo possui opções internas específicas. Uma academia, por exemplo, recebe recursos relacionados a frequência, alertas de ausência, objetivos e renovações. Uma oficina recebe ordens de serviço, acompanhamento de peças, revisões e histórico de veículos.
 
-### Gestão de clientes
+### 👥 Gestão de clientes
 
 - Cadastro, edição, busca e exclusão controlada por cargo.
 - Dados básicos: nome, documento, e-mail e telefone.
@@ -94,7 +136,7 @@ Cada módulo possui opções internas específicas. Uma academia, por exemplo, r
 - Exibição de informações específicas na listagem.
 - Preparação do cliente para vínculo com o gateway de pagamento.
 
-### Financeiro
+### 💳 Financeiro
 
 - Geração de cobranças avulsas.
 - Cobranças recorrentes com ciclos semanal, quinzenal, mensal, trimestral, semestral e anual.
@@ -116,7 +158,7 @@ Nesse modo, o sistema gera um código `CORE_FLOW_DEMO_PIX` sem valor bancário e
 
 O backend também está preparado para o **Asaas Sandbox**. A ativação é opcional e feita somente por variáveis seguras no servidor.
 
-### Webhooks de pagamento
+### 🔔 Webhooks de pagamento
 
 - Endpoint público `POST /webhooks/asaas`.
 - Validação do token recebido no header `asaas-access-token`.
@@ -125,7 +167,7 @@ O backend também está preparado para o **Asaas Sandbox**. A ativação é opci
 - Criação de cobranças originadas por assinaturas.
 - Registro da mudança no log de auditoria.
 
-### RBAC: controle por cargos
+### 🛡️ RBAC: controle por cargos
 
 | Recurso | Administrador | Gerente | Funcionário |
 | --- | :---: | :---: | :---: |
@@ -140,7 +182,7 @@ O backend também está preparado para o **Asaas Sandbox**. A ativação é opci
 | Visualizar auditoria | ✅ | — | — |
 | Alterar configurações administrativas | ✅ | — | — |
 
-### Dashboard e insights
+### 📊 Dashboard e insights
 
 - Indicadores de clientes, cobranças pendentes, cobranças pagas e receita confirmada.
 - Receita mensal dos últimos seis meses.
@@ -150,7 +192,7 @@ O backend também está preparado para o **Asaas Sandbox**. A ativação é opci
 - Integração opcional com a API da Groq para enriquecer o texto analítico.
 - Fallback local quando a integração externa não estiver configurada ou disponível.
 
-### Auditoria
+### 🧾 Auditoria
 
 - Registro das ações administrativas relevantes.
 - Identificação do usuário, tenant, entidade e ação executada.
@@ -158,7 +200,7 @@ O backend também está preparado para o **Asaas Sandbox**. A ativação é opci
 - Busca e filtros pela interface.
 - Rastreamento de cobranças, recorrências, usuários, clientes, configurações e webhooks.
 
-### Experiência de uso
+### 🎨 Experiência de uso
 
 - Interface responsiva para desktop e mobile.
 - Navegação adaptada ao cargo do usuário.
@@ -168,7 +210,8 @@ O backend também está preparado para o **Asaas Sandbox**. A ativação é opci
 - Configurações administrativas para empresa, fuso horário, moeda, formato de data, alertas e padrões financeiros.
 - Fallback SPA no Nginx para suportar React Router após atualizar a página.
 
-## Arquitetura
+<a id="arquitetura"></a>
+## 🏗️ Arquitetura
 
 ```mermaid
 flowchart LR
@@ -182,7 +225,7 @@ flowchart LR
     A -. opcional .-> G["Groq API"]
 ```
 
-### Estrutura principal
+### 📁 Estrutura principal
 
 ```text
 Core-Flow-main/
@@ -202,7 +245,8 @@ Core-Flow-main/
     └── src/              # Interface React
 ```
 
-## Stack tecnológica
+<a id="stack"></a>
+## 🧰 Stack tecnológica
 
 | Camada | Tecnologias |
 | --- | --- |
@@ -214,25 +258,26 @@ Core-Flow-main/
 | Testes | Jest e coleção Hoppscotch |
 | Integrações opcionais | Asaas Sandbox e Groq API |
 
-## Executando com Minikube
+<a id="execucao"></a>
+## 🚀 Executando com Minikube
 
 Este é o fluxo principal, validado no ambiente atual do projeto.
 
-### Pré-requisitos
+### ✅ Pré-requisitos
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Minikube](https://minikube.sigs.k8s.io/docs/start/)
 - `kubectl`
 - Node.js 20+ para desenvolvimento e testes locais
 
-### 1. Inicie o cluster
+### 1️⃣ Inicie o cluster
 
 ```powershell
 minikube start
 minikube addons enable ingress
 ```
 
-### 2. Configure os secrets
+### 2️⃣ Configure os secrets
 
 Crie `.k8s/secret.yaml` usando [docs/kubernetes-secret.example.yaml](docs/kubernetes-secret.example.yaml) como referência:
 
@@ -242,7 +287,7 @@ Copy-Item docs\kubernetes-secret.example.yaml .k8s\secret.yaml
 
 Substitua os valores de exemplo antes de aplicar. O arquivo real `.k8s/secret.yaml` é ignorado pelo Git.
 
-### 3. Gere as imagens Docker
+### 3️⃣ Gere as imagens Docker
 
 ```powershell
 cd D:\Projetos\Core-Flow-main\backend
@@ -252,7 +297,7 @@ cd D:\Projetos\Core-Flow-main\frontend
 docker build -t rennanmk9/coreflow-front:1.0.17 .
 ```
 
-### 4. Carregue as imagens locais no Minikube
+### 4️⃣ Carregue as imagens locais no Minikube
 
 Isso permite testar antes de enviar imagens ao registry:
 
@@ -261,7 +306,7 @@ minikube image load rennanmk9/coreflow-api:1.0.10
 minikube image load rennanmk9/coreflow-front:1.0.17
 ```
 
-### 5. Aplique os manifests
+### 5️⃣ Aplique os manifests
 
 ```powershell
 cd D:\Projetos\Core-Flow-main
@@ -275,7 +320,7 @@ kubectl apply -f .k8s\frontend_deployment.yml
 kubectl apply -f .k8s\ingress.yaml
 ```
 
-### 6. Verifique o rollout
+### 6️⃣ Verifique o rollout
 
 ```powershell
 kubectl rollout status deployment/coreflow-api-deployment
@@ -284,7 +329,7 @@ kubectl get pods
 kubectl logs deployment/coreflow-api-deployment --tail=100
 ```
 
-### 7. Abra a aplicação
+### 7️⃣ Abra a aplicação
 
 Para um teste simples com URL temporária:
 
@@ -310,9 +355,10 @@ Depois acesse:
 http://coreflow.seudominio.com
 ```
 
-## Testes e qualidade
+<a id="testes"></a>
+## 🧪 Testes e qualidade
 
-### Backend
+### ⚙️ Backend
 
 ```powershell
 cd D:\Projetos\Core-Flow-main\backend
@@ -336,7 +382,7 @@ A suíte atual cobre:
 - normalização das preferências administrativas;
 - compatibilidade com tenants legados.
 
-### Frontend
+### 🖥️ Frontend
 
 ```powershell
 cd D:\Projetos\Core-Flow-main\frontend
@@ -345,7 +391,7 @@ npm run lint
 npm run build
 ```
 
-### Testes de API com Hoppscotch
+### 📡 Testes de API com Hoppscotch
 
 A coleção exportada está disponível em:
 
@@ -355,7 +401,7 @@ docs/tests/coreflow-hoppscotch-collection.json
 
 Ela pode ser importada no [Hoppscotch](https://hoppscotch.io/) para validar os fluxos HTTP do projeto.
 
-## Configurações e integrações
+## 🔌 Configurações e integrações
 
 As integrações opcionais estão documentadas em [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
@@ -372,7 +418,7 @@ As integrações opcionais estão documentadas em [docs/CONFIGURATION.md](docs/C
 
 > Nunca envie `.env` ou `.k8s/secret.yaml` ao repositório. Use apenas o arquivo sanitizado de exemplo.
 
-## Rotas principais da API
+## 🛣️ Rotas principais da API
 
 | Método | Rota | Descrição |
 | --- | --- | --- |
@@ -389,11 +435,12 @@ As integrações opcionais estão documentadas em [docs/CONFIGURATION.md](docs/C
 | `GET` | `/api/insights` | Retorna métricas e resumo operacional |
 | `POST` | `/webhooks/asaas` | Recebe notificações do gateway |
 
-## Roadmap
+<a id="roadmap"></a>
+## 🗺️ Roadmap
 
 As funcionalidades abaixo fazem parte da evolução planejada e ainda não devem ser consideradas concluídas.
 
-### Curto prazo
+### 🟣 Curto prazo
 
 - [ ] Criar páginas operacionais completas para cada módulo licenciado, além do resumo atual.
 - [ ] Implementar agenda com calendário, confirmações e lista de espera.
@@ -403,7 +450,7 @@ As funcionalidades abaixo fazem parte da evolução planejada e ainda não devem
 - [ ] Criar notificações visuais dentro da aplicação.
 - [ ] Atualizar o `docker-compose.yml` para refletir o build de produção servido pelo Nginx.
 
-### Médio prazo
+### 🔵 Médio prazo
 
 - [ ] Criar integração completa com Asaas em ambiente Sandbox e homologar webhooks reais.
 - [ ] Adicionar Mercado Pago como segundo gateway.
@@ -414,7 +461,7 @@ As funcionalidades abaixo fazem parte da evolução planejada e ainda não devem
 - [ ] Adicionar templates de e-mail e mensagens para cobranças e lembretes.
 - [ ] Implementar migrations Sequelize versionadas para produção.
 
-### Longo prazo
+### 🟢 Longo prazo
 
 - [ ] Painéis analíticos específicos por nicho.
 - [ ] Assistente de IA conversacional com histórico e sugestões acionáveis.
@@ -424,14 +471,14 @@ As funcionalidades abaixo fazem parte da evolução planejada e ainda não devem
 - [ ] Deploy em ambiente cloud com domínio real, TLS e backups automatizados.
 - [ ] Testes end-to-end para jornadas críticas.
 
-## Observações de desenvolvimento
+## 📝 Observações de desenvolvimento
 
 - O `docker-compose.yml` atual é um artefato legado de desenvolvimento e ainda precisa ser alinhado ao frontend Nginx utilizado no fluxo Kubernetes.
 - O modo PIX demonstrativo é intencional e não movimenta valores reais.
 - As chaves externas devem existir somente no backend e em Secrets do ambiente.
 - O nicho é escolhido no cadastro e protegido pela licença; Configurações não altera o segmento da empresa.
 
-## Autor
+## 👨‍💻 Autor
 
 Desenvolvido por **Rennan de Oliveira Cardoso**<br />
 Estudante de Engenharia de Software | Full-Stack Developer
