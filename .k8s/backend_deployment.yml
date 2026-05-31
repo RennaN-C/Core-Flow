@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: coreflow-api
-        image: rennanmk9/coreflow-api:1.0.3
-        imagePullPolicy: Always #
+        image: rennanmk9/coreflow-api:1.0.10
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
         env:
@@ -43,3 +43,36 @@ spec:
             secretKeyRef:
               name: app-secret
               key: JWT_SECRET
+        - name: ASAAS_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: ASAAS_BASE_URL
+        - name: PAYMENT_PROVIDER
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: PAYMENT_PROVIDER
+        - name: GROQ_MODEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: GROQ_MODEL
+        - name: ASAAS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: ASAAS_API_KEY
+              optional: true
+        - name: ASAAS_WEBHOOK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: ASAAS_WEBHOOK_TOKEN
+              optional: true
+        - name: GROQ_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: GROQ_API_KEY
+              optional: true

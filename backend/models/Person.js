@@ -16,10 +16,16 @@ const Person = sequelize.define('Person', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  document: {
+    type: DataTypes.STRING,
+  },
   phone: {
     type: DataTypes.STRING,
   },
   email: {
+    type: DataTypes.STRING,
+  },
+  gateway_customer_id: {
     type: DataTypes.STRING,
   },
 
@@ -30,4 +36,4 @@ const Person = sequelize.define('Person', {
   }
 });
 
-module.exports = Person;    
+module.exports = Person;

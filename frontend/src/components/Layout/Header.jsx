@@ -1,41 +1,41 @@
-import { Bell, Search } from 'lucide-react';
+import { LogOut, Sparkles } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import ThemeToggle from '../ThemeToggle';
+
+const pages = {
+  '/': ['Visao geral', 'Acompanhe os indicadores da sua operacao'],
+  '/clientes': ['Clientes', 'Organize sua base de relacionamento'],
+  '/operacao': ['Operacao', 'Explore os recursos ativos para seu negocio'],
+  '/financeiro': ['Financeiro', 'Gerencie cobrancas e recebimentos'],
+  '/usuarios': ['Usuarios e cargos', 'Defina os acessos da sua equipe'],
+  '/auditoria': ['Auditoria', 'Consulte as alteracoes importantes'],
+  '/perfil': ['Meu perfil', 'Confira seus dados de acesso'],
+  '/configuracoes': ['Configuracoes', 'Personalize os dados do seu tenant'],
+};
 
 const Header = () => {
+  const location = useLocation();
+  const user = JSON.parse(localStorage.getItem('@CoreFlow:user') || '{}');
+  const [title, subtitle] = pages[location.pathname] || pages['/'];
+  const logout = () => {
+    localStorage.removeItem('@CoreFlow:token');
+    localStorage.removeItem('@CoreFlow:user');
+    window.location.href = '/login';
+  };
   return (
-    <header className="h-20 border-b border-zinc-800 bg-zinc-950/50 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-10">
+    <header className="app-header">
       <div>
-        <h2 className="text-xl font-semibold text-white">Dashboard</h2>
-        <p className="text-sm text-zinc-400">Acompanhe as métricas do seu negócio</p>
+        <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-violet-400"><Sparkles size={14} /> CoreFlow</div>
+        <h2 className="text-xl font-semibold text-white sm:text-2xl">{title}</h2>
+        <p className="hidden text-sm text-slate-500 sm:block">{subtitle}</p>
       </div>
-
-      <div className="flex items-center gap-6">
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
-          <input 
-            type="text" 
-            placeholder="Buscar..." 
-            className="bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all w-64 placeholder:text-zinc-600"
-          />
+      <div className="flex items-center gap-3 sm:gap-5">
+        <ThemeToggle compact />
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400 to-fuchsia-500 font-bold text-white shadow-lg shadow-violet-900/40">{user.name?.charAt(0)?.toUpperCase() || 'U'}</div>
+          <div className="hidden text-sm sm:block"><p className="font-medium text-white">{user.name || 'Usuario'}</p><p className="text-xs capitalize text-slate-500">{user.role || 'staff'}</p></div>
         </div>
-
-        <button className="text-zinc-400 hover:text-white transition-colors relative">
-          <Bell size={20} />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-emerald-500 rounded-full"></span>
-        </button>
-        
-        <div className="h-8 w-px bg-zinc-800"></div>
-
-        <div className="flex items-center gap-3 cursor-pointer">
-          <img 
-            src="https://ui-avatars.com/api/?name=Rennan&background=10b981&color=fff" 
-            alt="User" 
-            className="w-9 h-9 rounded-full border-2 border-zinc-800"
-          />
-          <div className="hidden sm:block text-sm">
-            <p className="text-white font-medium">Rennan</p>
-            <p className="text-zinc-500 text-xs">Administrador</p>
-          </div>
-        </div>
+        <button onClick={logout} className="header-logout lg:hidden" aria-label="Sair da conta" title="Sair da conta"><LogOut size={17} /></button>
       </div>
     </header>
   );

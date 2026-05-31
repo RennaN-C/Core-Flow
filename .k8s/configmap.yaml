@@ -5,5 +5,8 @@ metadata:
 data:
   DB_HOST: "postgres"
   DB_PORT: "5432"
-  NODE_ENV: "development"
+  NODE_ENV: "production"
   API_URL: "http://coreflow.seudominio.com"
+  PAYMENT_PROVIDER: "demo"
+  ASAAS_BASE_URL: "https://api-sandbox.asaas.com/v3"
+  GROQ_MODEL: "llama-3.3-70b-versatile"

@@ -1,4 +1,5 @@
 const { Person } = require('../models');
+const { recordAudit } = require('../services/audit');
 
 class PersonController {
  
@@ -14,6 +15,7 @@ class PersonController {
         metadata: metadata || {},
         tenant_id: req.user.tenant_id 
       });
+      await recordAudit({ req, action: 'PERSON_CREATED', entityType: 'Person', entityId: person.id });
 
       return res.status(201).json(person);
     } catch (error) {
@@ -68,6 +70,7 @@ class PersonController {
       }
 
       await person.update({ name, document, phone, email, metadata });
+      await recordAudit({ req, action: 'PERSON_UPDATED', entityType: 'Person', entityId: person.id });
 
       return res.json(person);
     } catch (error) {
@@ -89,6 +92,7 @@ class PersonController {
       }
 
       await person.destroy();
+      await recordAudit({ req, action: 'PERSON_DELETED', entityType: 'Person', entityId: person.id });
 
       return res.status(204).send(); // Sucesso sem conteúdo
     } catch (error) {

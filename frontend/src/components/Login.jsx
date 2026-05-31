@@ -1,127 +1,81 @@
-import { useState } from "react";
-import api from "../services/api";
-import { useNavigate, Link } from "react-router-dom";
-import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthShell from './AuthShell';
+import api from '../services/api';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setError('');
     setLoading(true);
 
     try {
-      const response = await api.post("/login", { email, password });
-      
-      
-      localStorage.setItem("@CoreFlow:token", response.data.token);
-      
-      if (response.data.user) {
-        localStorage.setItem("@CoreFlow:user", JSON.stringify(response.data.user));
-      }
-
-   
-      navigate(response.data.user?.Tenant?.isActive ? "/" : "/ativar-licenca");
-      
+      const response = await api.post('/login', { email, password });
+      localStorage.setItem('@CoreFlow:token', response.data.token);
+      if (response.data.user) localStorage.setItem('@CoreFlow:user', JSON.stringify(response.data.user));
+      navigate(response.data.user?.Tenant?.isActive ? '/' : '/ativar-licenca');
     } catch (err) {
-      setError(err.response?.data?.error || "E-mail ou senha incorretos.");
+      setError(err.response?.data?.error || 'E-mail ou senha incorretos.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl space-y-6">
-        
-        {/* Logo / Cabeçalho */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-white tracking-wider">
-            <span className="text-emerald-500">CORE</span>FLOW
-          </h1>
-          <p className="text-zinc-400 text-sm">Entre com suas credenciais para acessar a plataforma</p>
+    <AuthShell>
+      <div className="auth-card">
+        <div>
+          <p className="auth-card__eyebrow">Bem-vindo de volta</p>
+          <h2 className="auth-card__title">Acesse sua conta</h2>
+          <p className="auth-card__description">Entre com suas credenciais para continuar no CoreFlow.</p>
         </div>
 
-        {/* Mensagem de Erro */}
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-3 rounded-xl text-center">
-            {error}
-          </div>
-        )}
+        {error && <div className="auth-error">{error}</div>}
 
-        {/* Formulário */}
         <form onSubmit={handleLogin} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-zinc-400 text-sm font-medium">E-mail</label>
+          <div className="space-y-1.5">
+            <label className="auth-label">E-mail</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-zinc-600"
-              />
+              <Mail className="auth-input__icon" size={18} />
+              <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="seu@email.com" className="auth-input pl-10" />
             </div>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <label className="text-zinc-400 text-sm font-medium">Senha</label>
-              <a href="#" className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">Esqueceu a senha?</a>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="auth-label">Senha</label>
+              <span className="text-xs text-violet-300">Acesso protegido</span>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 rounded-xl pl-10 pr-10 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-zinc-600"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
-              >
+              <Lock className="auth-input__icon" size={18} />
+              <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="********" className="auth-input pl-10 pr-10" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-colors hover:text-violet-300">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-semibold py-3 rounded-xl transition-colors mt-2 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <Loader2 className="animate-spin" size={18} />
-            ) : (
-              "Acessar Sistema"
-            )}
+          <button type="submit" disabled={loading} className="auth-submit">
+            {loading ? <Loader2 className="animate-spin" size={18} /> : 'Acessar sistema'}
           </button>
         </form>
 
-        {/* Link para Registro */}
-        <div className="text-center pt-2 border-t border-zinc-800/60">
-          <p className="text-zinc-500 text-sm">
-            Não tem uma conta?{" "}
-            <Link to="/register" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
-              Cadastre-se aqui
-            </Link>
+        <div className="auth-card__footer">
+          <p className="text-sm text-slate-500">
+            Ainda nao possui conta?{' '}
+            <Link to="/register" className="font-medium text-violet-400 transition-colors hover:text-violet-300">Cadastre-se</Link>
           </p>
         </div>
-
       </div>
-    </div>
+    </AuthShell>
   );
 };
 

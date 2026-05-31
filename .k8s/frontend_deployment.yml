@@ -18,9 +18,9 @@ spec:
     spec:
       containers:
         - name: coreflow-front
-          image: rennanmk9/coreflow-front:1.0.7
+          image: rennanmk9/coreflow-front:1.0.17
 
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
 
           ports:
             - containerPort: 80

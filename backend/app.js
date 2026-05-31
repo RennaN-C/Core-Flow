@@ -14,7 +14,7 @@
     app.use(express.urlencoded({ extended: true }));
 
 
-    const authRoutes = require('./routes/auth.routes');
-    app.use('/auth', authRoutes); 
+    const routes = require('./routes');
+    app.use(routes);
 
     module.exports = app;

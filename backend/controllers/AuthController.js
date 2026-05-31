@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Tenant, sequelize } = require('../models');
+const { recordAudit } = require('../services/audit');
+const { createLicenseSettings, resolveProfile } = require('../services/businessProfiles');
+const { normalizeSystemPreferences } = require('../services/systemPreferences');
 
 const generateLicenseKey = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -16,7 +19,7 @@ class AuthController {
   
   async register(req, res) {
     try {
-      const { name, email, password, companyName, companyDocument, companyPhone, business_type } = req.body;
+      const { name, email, password, companyName, companyDocument, companyPhone, business_type, profile_id } = req.body;
 
       const userExists = await User.findOne({ where: { email } });
       if (userExists) {
@@ -27,14 +30,19 @@ class AuthController {
       
       
       const documentToSave = companyDocument && companyDocument.trim() !== "" ? companyDocument : null;
+      const profile = resolveProfile({ profileId: profile_id, businessType: business_type });
 
       const { tenant, user } = await sequelize.transaction(async (transaction) => {
         const tenant = await Tenant.create({
           name: companyName,
-          business_type: business_type,
+          business_type: profile.baseBusinessType,
           document: documentToSave,
           licenseKey: licenseKey,
-          active: false
+          active: false,
+          settings: {
+            license: createLicenseSettings(profile),
+            system: normalizeSystemPreferences({ company_phone: companyPhone }),
+          },
         }, { transaction });
 
         const salt = await bcrypt.genSalt(10);
@@ -54,7 +62,7 @@ class AuthController {
       return res.status(201).json({
         message: 'Empresa e usuário criados com sucesso!',
         licenseKey: licenseKey,
-        tenant: { id: tenant.id, name: tenant.name },
+        tenant: { id: tenant.id, name: tenant.name, profile_id: profile.id },
         user: { id: user.id, name: user.name, email: user.email }
       });
 
@@ -98,6 +106,7 @@ class AuthController {
           id: user.id, 
           name: user.name, 
           email: user.email,
+          role: user.role,
           Tenant: { isActive: tenant.active } 
         },
         token
@@ -132,6 +141,7 @@ class AuthController {
 
       tenant.active = true;
       await tenant.save();
+      await recordAudit({ req, action: 'TENANT_LICENSE_ACTIVATED', entityType: 'Tenant', entityId: tenant.id });
 
       console.log("SUCESSO: Empresa ativada com sucesso!");
       return res.json({ message: 'Sistema ativado com sucesso!', active: true });

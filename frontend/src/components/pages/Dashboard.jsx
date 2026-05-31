@@ -1,131 +1,64 @@
-  import { DollarSign, ShoppingBag, Users, TrendingUp, MoreVertical } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CircleCheck, DollarSign, FileClock, Sparkles, Users } from 'lucide-react';
+import resourceApi from '../../services/resourceApi';
+import { useTenantProfile } from '../../hooks/useTenantProfile';
 
-  // Componente reutilizável para os Cards
-  const StatCard = ({ title, value, change, trend, icon: Icon, colorClass }) => (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors shadow-lg">
-      <div className="flex justify-between items-start">
+const money = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const Dashboard = () => {
+  const { profile } = useTenantProfile();
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+  useEffect(() => { resourceApi.get('/insights').then(({ data }) => setData(data)).catch((err) => setError(err.response?.data?.error || 'Nao foi possivel carregar os indicadores.')); }, []);
+  if (error) return <p className="text-red-400">{error}</p>;
+  if (!data) return <p className="text-slate-400">Carregando indicadores...</p>;
+  const maxRevenue = Math.max(...data.revenueByMonth.map((month) => month.value), 1);
+  const cards = [
+    ['Receita confirmada', 'paidRevenue', DollarSign, 'from-violet-500 to-fuchsia-500'],
+    [profile.customerLabel, 'customers', Users, 'from-blue-500 to-indigo-500'],
+    ['Cobrancas pendentes', 'pendingInvoices', FileClock, 'from-orange-400 to-amber-500'],
+    ['Cobrancas pagas', 'paidInvoices', CircleCheck, 'from-emerald-400 to-teal-500'],
+  ];
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-6">
+      <section className="dashboard-hero">
         <div>
-          <p className="text-zinc-400 text-sm font-medium mb-1">{title}</p>
-          <h3 className="text-2xl font-bold text-white">{value}</h3>
+          <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-violet-200"><Sparkles size={15} /> Resumo operacional</p>
+          <h3 className="max-w-xl text-2xl font-semibold text-white sm:text-3xl">{profile.headline}</h3>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-violet-100/70">Ambiente CoreFlow adaptado para {profile.name.toLowerCase()}.</p>
         </div>
-        <div className={`p-3 rounded-xl ${colorClass}`}>
-          <Icon size={20} />
-        </div>
+      </section>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map(([label, key, Icon, gradient]) => (
+          <div key={key} className="metric-card">
+            <div className={`mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} text-white shadow-lg`}><Icon size={19} /></div>
+            <p className="text-sm text-slate-400">{label}</p>
+            <p className="mt-1 text-2xl font-bold text-white">{key === 'paidRevenue' ? money(data.metrics[key]) : data.metrics[key]}</p>
+          </div>
+        ))}
       </div>
-      <div className="mt-4 flex items-center text-sm">
-        <span className={trend === 'up' ? 'text-emerald-400' : 'text-red-400'}>
-          {trend === 'up' ? '↑' : '↓'} {change}
-        </span>
-        <span className="text-zinc-500 ml-2">vs último mês</span>
+      <div className="grid gap-6 xl:grid-cols-3">
+        <section className="surface-card xl:col-span-2">
+          <h3 className="mb-6 font-semibold text-white">Receita confirmada nos ultimos 6 meses</h3>
+          <div className="flex h-56 items-end gap-2 border-b border-violet-400/10 sm:gap-4">
+            {data.revenueByMonth.map((month) => <div key={month.label} className="flex h-full flex-1 flex-col items-center justify-end gap-2"><span className="hidden text-xs text-slate-400 sm:block">{money(month.value)}</span><div className="min-h-1 w-full max-w-16 rounded-t-lg bg-gradient-to-t from-violet-700 to-violet-400" style={{ height: `${(month.value / maxRevenue) * 80}%` }} /><span className="text-[10px] text-slate-500 sm:text-xs">{month.label}</span></div>)}
+          </div>
+        </section>
+        <section className="surface-card">
+          <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-violet-300"><Sparkles size={16} /> Insights operacionais</p>
+          <p className="text-sm leading-6 text-slate-300">{data.insight}</p>
+        </section>
       </div>
+      <section className="surface-card">
+        <h3 className="mb-4 font-semibold text-white">Visao operacional do nicho</h3>
+        <div className="grid gap-3 md:grid-cols-3">{profile.operationalFeatures.map((feature) => <div key={feature} className="niche-card"><p className="text-sm font-medium text-white">{feature}</p><p className="mt-2 text-xs text-slate-500">Acompanhe este indicador na rotina da operacao.</p></div>)}</div>
+      </section>
+      <section className="surface-card">
+        <h3 className="mb-4 font-semibold text-white">Ultimas cobrancas</h3>
+        {data.recentInvoices.length === 0 ? <p className="text-slate-500">Nenhuma cobranca registrada.</p> : data.recentInvoices.map((invoice) => <div key={invoice.id} className="flex flex-wrap justify-between gap-2 border-b border-violet-400/10 py-3 text-sm"><span className="text-slate-300">{invoice.Person?.name} - {invoice.description}</span><span className="text-white">{money(invoice.amount)} | {invoice.status}</span></div>)}
+      </section>
     </div>
   );
+};
 
-  const Dashboard = () => {
-
-    const recentOrders = [
-      { id: '#ORD-001', customer: 'João Silva', date: 'Hoje, 14:30', status: 'Concluído', total: 'R$ 1.250,00' },
-      { id: '#ORD-002', customer: 'Maria Santos', date: 'Hoje, 11:20', status: 'Pendente', total: 'R$ 450,00' },
-      { id: '#ORD-003', customer: 'Empresa XYZ', date: 'Ontem, 16:45', status: 'Processando', total: 'R$ 3.890,00' },
-      { id: '#ORD-004', customer: 'Lucas Oliveira', date: 'Ontem, 09:15', status: 'Cancelado', total: 'R$ 120,00' },
-    ];
-
-    return (
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard 
-            title="Receita Total" value="R$ 45.231,89" change="+12.5%" trend="up" 
-            icon={DollarSign} colorClass="bg-emerald-500/10 text-emerald-500"
-          />
-          <StatCard 
-            title="Vendas" value="356" change="+8.2%" trend="up" 
-            icon={ShoppingBag} colorClass="bg-blue-500/10 text-blue-500"
-          />
-          <StatCard 
-            title="Novos Clientes" value="45" change="-2.4%" trend="down" 
-            icon={Users} colorClass="bg-purple-500/10 text-purple-500"
-          />
-          <StatCard 
-            title="Ticket Médio" value="R$ 127,05" change="+4.1%" trend="up" 
-            icon={TrendingUp} colorClass="bg-orange-500/10 text-orange-500"
-          />
-        </div>
-
-        {/* Espaço para Gráficos */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 h-96 flex flex-col shadow-lg">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white font-semibold">Visão Geral de Receita</h3>
-              <select className="bg-zinc-950 border border-zinc-800 text-zinc-300 text-sm rounded-lg px-3 py-1 focus:outline-none focus:border-emerald-500">
-                <option>Últimos 7 dias</option>
-                <option>Este Mês</option>
-              </select>
-            </div>
-            <div className="flex-1 border-2 border-dashed border-zinc-800 rounded-xl flex items-center justify-center text-zinc-500">
-              [ Aqui instalaremos o pacote de gráficos 'Recharts' em breve ]
-            </div>
-          </div>
-
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 h-96 flex flex-col shadow-lg">
-            <h3 className="text-white font-semibold mb-6">Vendas por Categoria</h3>
-            <div className="flex-1 border-2 border-dashed border-zinc-800 rounded-xl flex items-center justify-center text-zinc-500">
-              [ Gráfico de Rosca ]
-            </div>
-          </div>
-        </div>
-
-        {/* Tabela de Dados */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg">
-          <div className="p-6 border-b border-zinc-800 flex justify-between items-center">
-            <h3 className="text-white font-semibold">Últimos Pedidos</h3>
-            <button className="text-emerald-500 hover:text-emerald-400 text-sm font-medium transition-colors">
-              Ver todos
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-zinc-950/50 text-zinc-400 text-sm">
-                  <th className="px-6 py-4 font-medium">Pedido</th>
-                  <th className="px-6 py-4 font-medium">Cliente</th>
-                  <th className="px-6 py-4 font-medium">Data</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 font-medium">Valor Total</th>
-                  <th className="px-6 py-4 font-medium"></th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {recentOrders.map((order, index) => (
-                  <tr key={index} className="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors">
-                    <td className="px-6 py-4 text-white font-medium">{order.id}</td>
-                    <td className="px-6 py-4 text-zinc-300">{order.customer}</td>
-                    <td className="px-6 py-4 text-zinc-400">{order.date}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        order.status === 'Concluído' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                        order.status === 'Pendente' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
-                        order.status === 'Processando' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                        'bg-red-500/10 text-red-400 border border-red-500/20'
-                      }`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-white font-medium">{order.total}</td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="text-zinc-500 hover:text-white transition-colors">
-                        <MoreVertical size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  export default Dashboard;
+export default Dashboard;

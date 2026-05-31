@@ -28,6 +28,10 @@ const Tenant = sequelize.define('Tenant', {
   active: {
     type: DataTypes.BOOLEAN,
     defaultValue: false, 
+  },
+  settings: {
+    type: DataTypes.JSONB,
+    defaultValue: {},
   }
 }, {
   timestamps: true,

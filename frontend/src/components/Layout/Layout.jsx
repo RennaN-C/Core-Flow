@@ -1,19 +1,18 @@
-import Sidebar from './Sidebar';
 import Header from './Header';
+import Sidebar, { MobileNav } from './Sidebar';
+import { TenantProfileProvider } from '../../context/TenantProfileProvider';
 
-const Layout = ({ children }) => {
-  return (
-    <div className="flex h-screen bg-zinc-950 overflow-hidden font-sans">
+const Layout = ({ children }) => (
+  <TenantProfileProvider>
+    <div className="app-shell">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Header />
-        {}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-zinc-950 p-6 md:p-8">
-          {children}
-        </main>
+        <main className="app-main">{children}</main>
       </div>
+      <MobileNav />
     </div>
-  );
-};
+  </TenantProfileProvider>
+);
 
 export default Layout;
