@@ -27,7 +27,7 @@ const Login = () => {
       }
 
    
-      navigate("/ativar-licenca");
+      navigate(response.data.user?.Tenant?.isActive ? "/" : "/ativar-licenca");
       
     } catch (err) {
       setError(err.response?.data?.error || "E-mail ou senha incorretos.");
